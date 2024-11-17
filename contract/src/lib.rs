@@ -7,7 +7,6 @@ use hodl_model::{
     draft::{Draft, DraftGroup, DraftGroupIndex, DraftIndex},
     lockup::{Lockup, LockupIndex},
     lockup_api::LockupApi,
-    schedule::Schedule,
     util::current_timestamp_sec,
     TimestampSec, TokenAccountId, WrappedBalance,
 };
@@ -231,7 +230,6 @@ impl LockupApi for Contract {
     fn terminate(
         &mut self,
         lockup_index: LockupIndex,
-        hashed_schedule: Option<Schedule>,
         termination_timestamp: Option<TimestampSec>,
     ) -> PromiseOrValue<WrappedBalance> {
         assert_one_yocto();
@@ -243,7 +241,7 @@ impl LockupApi for Contract {
             termination_timestamp >= current_timestamp,
             "expected termination_timestamp >= now",
         );
-        let (unvested_balance, beneficiary_id) = lockup.terminate(hashed_schedule, termination_timestamp);
+        let (unvested_balance, beneficiary_id) = lockup.terminate(termination_timestamp);
         self.lockups.replace(u64::from(lockup_index), &lockup);
 
         // no need to store empty lockup

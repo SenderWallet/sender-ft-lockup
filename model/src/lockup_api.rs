@@ -4,7 +4,6 @@ use nitka::make_integration_version;
 use crate::{
     draft::{Draft, DraftGroupIndex, DraftIndex},
     lockup::LockupIndex,
-    schedule::Schedule,
     TimestampSec, WrappedBalance,
 };
 
@@ -22,7 +21,6 @@ pub trait LockupApi {
     fn terminate(
         &mut self,
         lockup_index: LockupIndex,
-        hashed_schedule: Option<Schedule>,
         termination_timestamp: Option<TimestampSec>,
     ) -> PromiseOrValue<WrappedBalance>;
 

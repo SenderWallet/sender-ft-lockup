@@ -6,7 +6,7 @@ use crate::{lockup::Lockup, schedule::Schedule, Balance, TimestampSec};
 #[derive(Clone, Debug, PartialEq)]
 pub enum VestingConditions {
     SameAsLockupSchedule,
-    Hash(Base58CryptoHash),
+    //Hash(Base58CryptoHash),
     Schedule(Schedule),
 }
 
@@ -23,23 +23,12 @@ pub struct TerminationConfig {
 impl Lockup {
     pub fn terminate(
         &mut self,
-        hashed_schedule: Option<Schedule>,
         termination_timestamp: TimestampSec,
     ) -> (Balance, AccountId) {
         let termination_config = self.termination_config.take().expect("No termination config");
         let total_balance = self.schedule.total_balance();
         let vested_balance = match &termination_config.vesting_schedule {
             VestingConditions::SameAsLockupSchedule => &self.schedule,
-            VestingConditions::Hash(hash) => {
-                let schedule = hashed_schedule
-                    .as_ref()
-                    .expect("Revealed schedule required for the termination");
-                let hash: CryptoHash = (*hash).into();
-                assert_eq!(hash, schedule.hash(), "The revealed schedule hash doesn't match");
-                schedule.assert_valid(total_balance);
-                self.schedule.assert_valid_termination_schedule(schedule);
-                schedule
-            }
             VestingConditions::Schedule(schedule) => schedule,
         }
         .unlocked_balance(termination_timestamp);

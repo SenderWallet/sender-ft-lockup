@@ -79,9 +79,6 @@ impl Lockup {
                 VestingConditions::SameAsLockupSchedule => {
                     // Ok, using lockup schedule.
                 }
-                VestingConditions::Hash(_hash) => {
-                    // Ok, using unknown hash. Can't verify.
-                }
                 VestingConditions::Schedule(schedule) => {
                     schedule.assert_valid(total_balance);
                     self.schedule.assert_valid_termination_schedule(schedule);
